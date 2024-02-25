@@ -8,15 +8,15 @@ import Card from "react-bootstrap/Card";
 import logo from "./Images/car-logo.jpg";
 import { toast, ToastContainer } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
   const [carData, setcarData] = useState([]);
   const [dat, setDat] = useState();
-  
+
   const location = useLocation();
   const token = location.state;
   const navigate = useNavigate();
-  console.log(token);
 
   useEffect(() => {
     (async () => await GetCarDetails())();
@@ -39,9 +39,8 @@ function Dashboard() {
   }
 
   const pass = () => {
-    navigate("/reservation");
+    navigate("/reservation", { state: { data: carData } });
   };
-
   return (
     <>
       <NavScrollExample
@@ -59,7 +58,6 @@ function Dashboard() {
       <div className="cardd">
         {carData
           ? carData.map(function fn(Data) {
-            
               return (
                 <Card
                   style={{ width: "18rem", borderColor: "grey" }}
@@ -99,9 +97,18 @@ function Dashboard() {
                     ) : (
                       <p>No car data available</p>
                     )}
-                    <Button variant="primary" onClick={pass}>
-                      Rent
-                    </Button>
+                    <Link
+                      to={{
+                        pathname: "/reservation",
+                      }}
+                      state={{
+                        Data: Data,
+                        username: token.username,
+                        token: token.token,
+                      }}
+                    >
+                      <Button variant="primary">Rent</Button>
+                    </Link>
                   </Card.Body>
                 </Card>
               );

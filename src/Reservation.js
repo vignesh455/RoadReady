@@ -11,67 +11,99 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Reservation() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const data = location.state;
+
   const [countries] = useState([
-    { code: "hyd", title: "Hyderabad" },
-    { code: "ch", title: "Chennai" },
-    { code: "bg", title: "Banglore" },
-    { code: "dl", title: "Delhi" },
-    { code: "Pn", title: "Pune" },
-    { code: "Mb", title: "Mumbai" },
+    { code: "hyderabad", title: "Hyderabad" },
+    { code: "chennai", title: "Chennai" },
+    { code: "banglore", title: "Banglore" },
+    { code: "delhi", title: "Delhi" },
+    { code: "Pune", title: "Pune" },
+    { code: "Mumbai", title: "Mumbai" },
     { code: "goa", title: "Goa" },
-    { code: "Kl", title: "Kolkata" },
-    { code: "Cb", title: "Coimbatore" },
-    { code: "Vz", title: "Vijaywada" },
+    { code: "Kolkata", title: "Kolkata" },
+    { code: "Coimbatore", title: "Coimbatore" },
+    { code: "Vijayawada", title: "Vijaywada" },
   ]);
   const [toggleContents, setToggleContents] = useState("Select Location");
-  const [selectedCountry, setSelectedCountry] = useState();
+  const [selectedCountrystart, setSelectedCountry] = useState();
 
   const [toggleContent, setToggleContent] = useState("Select Location");
-  const [selectedCounty, setSelectedCounty] = useState();
+  const [selectedCountyend, setSelectedCounty] = useState();
 
   const [start, setstart] = React.useState(dayjs());
   const [end, setend] = React.useState(dayjs());
-  console.log(end);
 
   const [selectedDiv, setSelectedDiv] = useState(null);
   const changeColor = (index) => {
     setSelectedDiv(index);
   };
 
-  const navigate = useNavigate();
-
-  const pass = () =>{
-    navigate("/payment",{state:{res:res}});
-  }
-
+  const [result, setResult] = useState();
   const [res, setRes] = useState(0);
 
   const Trip = () => {
     var months = [30, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    var Seater = 90;
+    var Seater = data.Data.dailyRate;
     if (start.$M === end.$M) {
-      if (start.$D === end.$D) {
-        if (start.$H === end.$H) {
-          setRes(12 * Seater);
-        }
-        if (start.$H > end.$H) {
-          setRes((12 - (start.$H - end.$H)) * Seater);
-        }
-        if (start.$H < end.$H) {
-          setRes((12 + (end.$H - start.$H)) * Seater);
-        }
-      } else {
-        var days = end.$D-start.$D;
-        setRes(days * 24 * Seater);
-      }
-    }else{
-        var days = (months[start.$M]-start.$D)+end.$D;
-        setRes(days*24*Seater);
+      setRes((end.$D - start.$D) * Seater);
+    } else {
+      var days = months[start.$M] - start.$D + end.$D;
+      setRes(days * Seater);
     }
   };
+
+  useEffect(() => {
+    (async () => await GetUserDetails())();
+  }, []);
+
+  async function GetUserDetails() {
+    try {
+      const result = await axios.get(
+        "http://localhost:5260/api/User/user/GetUser/" + data.username,
+        {
+          headers: {
+            Authorization: `Bearer ${data.token}`,
+          },
+        }
+      );
+      setResult(result.data);
+    } catch (err) {
+      alert(err);
+    }
+  }
+
+  async function AddReservation() {
+    try {
+      await axios.post("http://localhost:5260/api/Reservation/user/create", {
+        reservationId: 0,
+        pickUpDateTime: start.toISOString(),
+        dropOffDateTime: end.toISOString(),
+        status: "Booked",
+        pickUpLocation: selectedCountrystart,
+        dropOffLocation: selectedCountyend,
+        totalPrice: res + 99 + 99,
+        payment: null,
+        paymentId: null,
+        user: null,
+        userId: result.userId,
+        car: null,
+        carId: data.Data.carId,
+        appliedDiscounts: null,
+      });
+      alert("success");
+      navigate("/payment", { state: { res: res } });
+    } catch (err) {
+      alert(err);
+    }
+  }
+
   return (
     <>
       <NavScrollExample />
@@ -88,7 +120,7 @@ function Reservation() {
           <Card.Header style={{ height: "400px" }}>
             <img
               style={{ height: "380px", marginLeft: "40px" }}
-              src={img4}
+              src={data.Data.imageURL}
               alt="img"
             />
           </Card.Header>
@@ -101,7 +133,7 @@ function Reservation() {
             }}
           >
             <ul>
-              <li>Toyota Etios</li>
+              <li>{data.Data.make + " " + data.Data.model}</li>
             </ul>
           </div>
           <div style={{ marginLeft: "30px", marginTop: "10px" }}>From</div>
@@ -254,7 +286,7 @@ function Reservation() {
               <ListGroup.Item>
                 Total
                 Amount&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&nbsp;&nbsp;&nbsp;&#8377;
-                {res+99+99}
+                {res + 99 + 99}
               </ListGroup.Item>
               <ListGroup.Item>
                 Refundable
@@ -263,7 +295,7 @@ function Reservation() {
               <ListGroup.Item>
                 Final
                 Amount&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&#8377;
-                {res+99+99}
+                {res + 99 + 99}
               </ListGroup.Item>
             </ListGroup>
             <div>
@@ -273,9 +305,9 @@ function Reservation() {
               <Button
                 variant="success"
                 style={{ position: "relative", left: "200px", top: "70px" }}
-                onClick={pass}
+                onClick={AddReservation}
               >
-                Proceed to payment &#8377;{res}
+                Proceed to payment &#8377;{res + 99 + 99}
               </Button>
             </div>
           </Card>
@@ -291,7 +323,9 @@ function Reservation() {
             }}
           >
             <ul>
-              <li>Toyota Etios Car Specifications</li>
+              <li>
+                {data.Data.make + " " + data.Data.model} Car Specifications
+              </li>
             </ul>
           </div>
           <Card
@@ -304,16 +338,17 @@ function Reservation() {
           >
             <ListGroup variant="flush">
               <ListGroup.Item>
-                Price&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&#8377;90/hr
+                Price&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&#8377;
+                {data.Data.dailyRate}/day
               </ListGroup.Item>
               <ListGroup.Item>
                 Mileage&emsp;&emsp;&emsp;
-                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;16.78
-                to 23.59 kmpl
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                {data.Data.specification?.slice(9, 15)}
               </ListGroup.Item>
               <ListGroup.Item>
                 Engine&emsp;&emsp;&emsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
-                1364 cc & 1496 cc
+                {data.Data.specification?.slice(16, 30)}
               </ListGroup.Item>
               <ListGroup.Item>
                 Fuel&emsp;&emsp;&emsp;
@@ -322,11 +357,11 @@ function Reservation() {
               </ListGroup.Item>
               <ListGroup.Item>
                 Transmission&emsp;&emsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-                &nbsp; Manual
+                &nbsp; {data.Data.specification?.slice(38, 45)}
               </ListGroup.Item>
               <ListGroup.Item>
                 Seater&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-                5 Seater
+                {data.Data.specification?.slice(0, 8)}
               </ListGroup.Item>
             </ListGroup>
           </Card>

@@ -27,7 +27,7 @@ function Payment() {
           style={{
             position: "absolute",
             top: "180px",
-            left: "110px",
+            left: "220px",
             fontWeight: "500",
             fontSize: "large",
           }}
@@ -39,7 +39,7 @@ function Payment() {
             width: "20rem",
             height: "18rem",
             top: "200px",
-            left: "100px",
+            left: "205px",
           }}
         >
           <div
@@ -194,7 +194,7 @@ function Payment() {
             width: "25rem",
             height: "18rem",
             top: "200px",
-            left: "90px",
+            left: "200px",
             borderRadius: "0"
           }}
         >
@@ -220,7 +220,7 @@ function Payment() {
             <p style={{ marginLeft: "77px", marginTop: "10px", fontSize: "medium" }}>PhonePe</p>
           </div>
         </Card>
-        <Card style={{ width: "20rem", height: "18rem", top: "200px", marginLeft: "88px", borderTopLeftRadius: "0", borderBottomLeftRadius: "0" }}>
+        <Card style={{ width: "20rem", height: "18rem", top: "200px", marginLeft: "200px", borderTopLeftRadius: "0", borderBottomLeftRadius: "0" }}>
           <div style={{textAlign:"center"}}>
             <p style={{position:"relative",top:"15px",fontWeight:"500"}}>Scan QR to Pay</p>
             <img style={{ height: "220px", width: "240px" }} src={qrcode} alt="img" />

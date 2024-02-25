@@ -10,7 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 
-function Register() {
+function AdminRegister() {
   const [firstname, setfirstname] = useState("");
   const [lastname, setlastname] = useState("");
   const [email, setemail] = useState("");
@@ -31,18 +31,18 @@ function Register() {
   async function AddUser() {
     console.log(username);
     try {
-      await axios.post("http://localhost:5260/Register_User", {
+      await axios.post("http://localhost:5260/Register_Admin", {
         username: username,
         password: password,
-        role: "user",
+        role: "admin",
         firstname: firstname,
         lastname: lastname,
         email: email,
         phoneNumber: phone,
       });
-      alert("success");
+      
       toast.success("Successfully registered");
-      navigate("/userlogin");
+      navigate("/admin");
     } catch (err) {
       toast.error(err);
     }
@@ -57,7 +57,7 @@ function Register() {
           <div className="col-md-6 col-lg-4">
             <div className="card">
               <div className="card-body">
-                <h2 className="card-title text-center mb-4"> Register</h2>
+                <h2 className="card-title text-center mb-4"> Admin Register</h2>
                 <form>
                   <div className="mb-3">
                     <label htmlFor="username" className="form-label">
@@ -185,4 +185,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default AdminRegister;

@@ -13,14 +13,14 @@ import { toast, ToastContainer } from "react-toastify";
 import Sidebar from "./Sidebar";
 import { useState } from "react";
 
-function NavScrollExample(props) {
+function AdminNavbar(props) {
   const [userdata, setUserdata] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const tok = location.state;
 
   const pass = () => {
-    navigate("/profile", {
+    navigate("/AdminProfile", {
       state: {
         token: tok.token,
         username: tok.username ? tok.username : null,
@@ -53,19 +53,9 @@ function NavScrollExample(props) {
                 fontFamily:
                   "-apple-system,Helvetica Neue, Arial, sans-serif,Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
               }}
-              href="#action2"
+              href="/addcar"
             >
-              About
-            </Nav.Link>
-            <Nav.Link
-              style={{
-                color: "black",
-                fontFamily:
-                  "-apple-system,Helvetica Neue, Arial, sans-serif,Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-              }}
-              href="#action2"
-            >
-              Contact
+              Add Car
             </Nav.Link>
           </Nav>
 
@@ -84,4 +74,4 @@ function NavScrollExample(props) {
   );
 }
 
-export default NavScrollExample;
+export default AdminNavbar;

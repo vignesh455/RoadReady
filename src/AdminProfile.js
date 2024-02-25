@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 
-function Profile(props) {
+function AdminProfile(props) {
   const [data, setcarData] = useState([]);
   const location = useLocation();
   const toke = location.state;
@@ -26,7 +26,7 @@ function Profile(props) {
   async function GetUserDetails() {
     try {
       const result = await axios.get(
-        "http://localhost:5260/api/User/user/GetUser/" + toke.username,
+        "http://localhost:5260/api/Admin/admin/admins/" + toke.username,
         {
           headers: {
             Authorization: `Bearer ${toke.token}`,
@@ -78,8 +78,7 @@ function Profile(props) {
             </div>
             <div style={{ position: "relative", textAlign: "center", bottom: "130px" }}>
               <p >Email : {data.email?data.email:toke.email}</p>
-              <p style={{marginRight:"17px"}}>Mobile : {data.phoneNumber?data.phoneNumber:"None"}</p>
-              <p style={{marginLeft:"25px"}} >Registered on : {data.registrationDate?.slice(0, 10)}</p>
+              <p style={{marginRight:"25px"}}>Mobile : {data.phoneNumber?data.phoneNumber:"None"}</p>
             </div>
             <div style={{textAlign: "left", marginLeft: "30px", fontSize: "large",position:"relative",bottom:"60px",fontWeight:"500"}}>Location Details</div>
             <hr style={{ marginLeft: "20px", marginRight: "20px", position: "relative", bottom: "74px" }} />
@@ -90,4 +89,4 @@ function Profile(props) {
     </>
   );
 }
-export default Profile;
+export default AdminProfile;

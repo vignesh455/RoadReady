@@ -7,14 +7,13 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useGoogleLogin } from "@react-oauth/google";
-import img from "./Images/Google.jpg";
+
 import Profile from "./Profile";
 import { GoogleLogin } from "@react-oauth/google";
-import CryptoJS from "crypto-js";
+
 import { jwtDecode } from "jwt-decode";
 
-function Login(props) {
+function Admin(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,7 +34,7 @@ function Login(props) {
       const result = await axios.post("http://localhost:5260/Login", {
         username: username,
         password: password,
-        role: "user",
+        role: "admin",
         token: "string",
       });
       <Profile data={{ username: username, password: password }} />;
@@ -43,7 +42,7 @@ function Login(props) {
       toast.success("Login Success");
       setLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      navigate("/dashboard", { state: { username, token } });
+      navigate("/AdminDashboard", { state: { username, token } });
     } catch (err) {
       toast.error(err);
     }
@@ -58,12 +57,7 @@ function Login(props) {
           <div className="col-md-6 col-lg-4">
             <div className="card">
               <div className="card-body">
-                {props.isadmin ? (
-                  <h2 className="card-title text-center mb-4"> Admin Login</h2>
-                ) : (
-                  <h2 className="card-title text-center mb-4"> User Login</h2>
-                )}
-
+                <h2 className="card-title text-center mb-4"> Admin Login</h2>
                 <form>
                   <div className="mb-3">
                     <label htmlFor="username" className="form-label">
@@ -113,7 +107,7 @@ function Login(props) {
                     </span>
 
                     <span className="newuser">
-                      <Link to="/register">New User?</Link>
+                      <Link to="/adminregister">New User?</Link>
                     </span>
                   </div>
                   <div className="usergmail">
@@ -167,4 +161,4 @@ function Login(props) {
     </>
   );
 }
-export default Login;
+export default Admin;
